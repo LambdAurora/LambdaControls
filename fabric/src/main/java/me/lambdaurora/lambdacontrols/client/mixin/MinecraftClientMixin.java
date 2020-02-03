@@ -42,7 +42,7 @@ public abstract class MinecraftClientMixin
 {
     @Shadow
     @Nullable
-    public HitResult crosshairTarget;
+    public HitResult hitResult;
 
     @Shadow
     @Nullable
@@ -82,10 +82,10 @@ public abstract class MinecraftClientMixin
     private void lambdacontrols_onItemUse(CallbackInfo ci, Hand[] hands, int handCount, int handIndex, Hand hand, ItemStack stackInHand)
     {
         if (!stackInHand.isEmpty() && this.player.pitch > 35.0F && LambdaControlsFeature.FRONT_BLOCK_PLACING.isAvailable()) {
-            if (this.crosshairTarget != null && this.crosshairTarget.getType() == HitResult.Type.MISS && this.player.onGround) {
+            if (this.hitResult != null && this.hitResult.getType() == HitResult.Type.MISS && this.player.onGround) {
                 if (!stackInHand.isEmpty() && stackInHand.getItem() instanceof BlockItem) {
                     BlockPos playerPos = this.player.getBlockPos().down();
-                    BlockPos targetPos = new BlockPos(this.crosshairTarget.getPos()).subtract(playerPos);
+                    BlockPos targetPos = new BlockPos(this.hitResult.getPos()).subtract(playerPos);
                     BlockPos vector = new BlockPos(MathHelper.clamp(targetPos.getX(), -1, 1), 0, MathHelper.clamp(targetPos.getZ(), -1, 1));
                     BlockPos blockPos = playerPos.add(vector);
 
@@ -96,7 +96,7 @@ public abstract class MinecraftClientMixin
                         return;
                     }
 
-                    BlockHitResult hitResult = new BlockHitResult(this.crosshairTarget.getPos(), direction.getOpposite(), blockPos, false);
+                    BlockHitResult hitResult = new BlockHitResult(this.hitResult.getPos(), direction.getOpposite(), blockPos, false);
 
                     int previousStackCount = stackInHand.getCount();
                     ActionResult result = this.interactionManager.interactBlock(this.player, this.world, hand, hitResult);

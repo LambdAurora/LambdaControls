@@ -149,8 +149,8 @@ public class TouchscreenOverlay extends Screen
     protected void init()
     {
         super.init();
-        int scaledWidth = this.minecraft.getWindow().getScaledWidth();
-        int scaledHeight = this.minecraft.getWindow().getScaledHeight();
+        int scaledWidth = this.minecraft.window.getScaledWidth();
+        int scaledHeight = this.minecraft.window.getScaledHeight();
         this.addButton(new TexturedButtonWidget(scaledWidth / 2 - 20, 0, 20, 20, 0, 106, 20, ButtonWidget.WIDGETS_LOCATION, 256, 256,
                 btn -> this.minecraft.openScreen(new ChatScreen("")), ""));
         this.addButton(new TexturedButtonWidget(scaledWidth / 2, 0, 20, 20, 0, 0, 20, WIDGETS_LOCATION, 256, 256,

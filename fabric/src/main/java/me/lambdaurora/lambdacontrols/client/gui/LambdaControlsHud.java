@@ -53,20 +53,20 @@ public class LambdaControlsHud extends Hud
     public void render(float tickDelta)
     {
         if (this.mod.config.getControlsMode() == ControlsMode.CONTROLLER && this.client.currentScreen == null) {
-            int x = this.mod.config.getHudSide() == HudSide.LEFT ? 10 : client.getWindow().getScaledWidth() - 10 - this.widthBottom, y = bottom(10);
+            int x = this.mod.config.getHudSide() == HudSide.LEFT ? 10 : client.window.getScaledWidth() - 10 - this.widthBottom, y = bottom(10);
             x += (this.widthBottom = this.drawButtonTip(x, y, ButtonBinding.INVENTORY, true) + 10);
             this.widthBottom += this.drawButtonTip(x, y, ButtonBinding.SWAP_HANDS, true);
-            x = this.mod.config.getHudSide() == HudSide.LEFT ? 10 : client.getWindow().getScaledWidth() - 10 - this.widthTop;
+            x = this.mod.config.getHudSide() == HudSide.LEFT ? 10 : client.window.getScaledWidth() - 10 - this.widthTop;
             x += (this.widthTop = this.drawButtonTip(x, (y -= 20), ButtonBinding.DROP_ITEM, !this.client.player.getMainHandStack().isEmpty()) + 10);
             this.widthTop += this.drawButtonTip(x, y, ButtonBinding.ATTACK.getButton(),
-                    this.client.crosshairTarget.getType() == HitResult.Type.BLOCK ? "lambdacontrols.action.hit" : ButtonBinding.ATTACK.getTranslationKey(),
-                    this.client.crosshairTarget.getType() != HitResult.Type.MISS);
+                    this.client.hitResult.getType() == HitResult.Type.BLOCK ? "lambdacontrols.action.hit" : ButtonBinding.ATTACK.getTranslationKey(),
+                    this.client.hitResult.getType() != HitResult.Type.MISS);
         }
     }
 
     private int bottom(int y)
     {
-        return this.client.getWindow().getScaledHeight() - y - 15;
+        return this.client.window.getScaledHeight() - y - 15;
     }
 
     private int drawButtonTip(int x, int y, @NotNull ButtonBinding button, boolean display)

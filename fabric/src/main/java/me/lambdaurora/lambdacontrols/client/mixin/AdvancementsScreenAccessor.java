@@ -10,7 +10,7 @@
 package me.lambdaurora.lambdacontrols.client.mixin;
 
 import net.minecraft.advancement.Advancement;
-import net.minecraft.client.gui.screen.advancement.AdvancementTab;
+import net.minecraft.client.gui.screen.advancement.AdvancementTreeWidget;
 import net.minecraft.client.gui.screen.advancement.AdvancementsScreen;
 import net.minecraft.client.network.ClientAdvancementManager;
 import org.spongepowered.asm.mixin.Mixin;
@@ -27,9 +27,9 @@ public interface AdvancementsScreenAccessor
     @Accessor("advancementHandler")
     ClientAdvancementManager lambdacontrols_getAdvancementManager();
 
-    @Accessor("tabs")
-    Map<Advancement, AdvancementTab> lambdacontrols_getTabs();
+    @Accessor("widgetMap")
+    Map<Advancement, AdvancementTreeWidget> lambdacontrols_getTabs();
 
-    @Accessor("selectedTab")
-    AdvancementTab lambdacontrols_getSelectedTab();
+    @Accessor("selectedWidget")
+    AdvancementTreeWidget lambdacontrols_getSelectedTab();
 }

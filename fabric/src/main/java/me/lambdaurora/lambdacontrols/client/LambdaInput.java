@@ -23,7 +23,7 @@ import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.ParentElement;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.advancement.AdvancementsScreen;
-import net.minecraft.client.gui.screen.ingame.ContainerScreen;
+import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerServerListWidget;
@@ -300,9 +300,9 @@ public class LambdaInput
                 }
             }
 
-            if (client.currentScreen instanceof ContainerScreen && client.interactionManager != null && client.player != null) {
-                double x = client.mouse.getX() * (double) client.getWindow().getScaledWidth() / (double) client.getWindow().getWidth();
-                double y = client.mouse.getY() * (double) client.getWindow().getScaledHeight() / (double) client.getWindow().getHeight();
+            if (client.currentScreen instanceof AbstractContainerScreen && client.interactionManager != null && client.player != null) {
+                double x = client.mouse.getX() * (double) client.window.getScaledWidth() / (double) client.window.getWidth();
+                double y = client.mouse.getY() * (double) client.window.getScaledHeight() / (double) client.window.getHeight();
                 Slot slot = ((ContainerScreenAccessor) client.currentScreen).lambdacontrols_getSlotAt(x, y);
                 SlotActionType slotAction = SlotActionType.PICKUP;
                 if (button == GLFW.GLFW_GAMEPAD_BUTTON_A && slot != null) {
@@ -310,17 +310,17 @@ public class LambdaInput
                         if (((CreativeInventoryScreenAccessor) client.currentScreen).lambdacontrols_isCreativeInventorySlot(slot))
                             slotAction = SlotActionType.CLONE;
                     }
-                    client.interactionManager.clickSlot(((ContainerScreen) client.currentScreen).getContainer().syncId, slot.id, GLFW.GLFW_MOUSE_BUTTON_1, slotAction, client.player);
+                    client.interactionManager.clickSlot(((AbstractContainerScreen) client.currentScreen).getContainer().syncId, slot.id, GLFW.GLFW_MOUSE_BUTTON_1, slotAction, client.player);
                     this.actionGuiCooldown = 5;
                     return;
                 } else if (button == GLFW.GLFW_GAMEPAD_BUTTON_B) {
                     client.player.closeContainer();
                     return;
                 } else if (button == GLFW.GLFW_GAMEPAD_BUTTON_X && slot != null) {
-                    client.interactionManager.clickSlot(((ContainerScreen) client.currentScreen).getContainer().syncId, slot.id, GLFW.GLFW_MOUSE_BUTTON_2, SlotActionType.PICKUP, client.player);
+                    client.interactionManager.clickSlot(((AbstractContainerScreen) client.currentScreen).getContainer().syncId, slot.id, GLFW.GLFW_MOUSE_BUTTON_2, SlotActionType.PICKUP, client.player);
                     return;
                 } else if (button == GLFW.GLFW_GAMEPAD_BUTTON_Y && slot != null) {
-                    client.interactionManager.clickSlot(((ContainerScreen) client.currentScreen).getContainer().syncId, slot.id, GLFW.GLFW_MOUSE_BUTTON_1, SlotActionType.QUICK_MOVE, client.player);
+                    client.interactionManager.clickSlot(((AbstractContainerScreen) client.currentScreen).getContainer().syncId, slot.id, GLFW.GLFW_MOUSE_BUTTON_1, SlotActionType.QUICK_MOVE, client.player);
                     return;
                 }
             } else if (button == GLFW.GLFW_GAMEPAD_BUTTON_B) {
@@ -332,8 +332,8 @@ public class LambdaInput
         }
 
         if (button == GLFW.GLFW_GAMEPAD_BUTTON_A && client.currentScreen != null && !isScreenInteractive(client.currentScreen) && this.actionGuiCooldown == 0 && this.ignoreNextA == 0) {
-            double mouseX = client.mouse.getX() * (double) client.getWindow().getScaledWidth() / (double) client.getWindow().getWidth();
-            double mouseY = client.mouse.getY() * (double) client.getWindow().getScaledHeight() / (double) client.getWindow().getHeight();
+            double mouseX = client.mouse.getX() * (double) client.window.getScaledWidth() / (double) client.window.getWidth();
+            double mouseY = client.mouse.getY() * (double) client.window.getScaledHeight() / (double) client.window.getHeight();
             if (action == 0) {
                 client.currentScreen.mouseClicked(mouseX, mouseY, GLFW.GLFW_MOUSE_BUTTON_1);
             } else if (action == 1) {
@@ -485,8 +485,8 @@ public class LambdaInput
         } else if (focused instanceof MultiplayerServerListWidget) {
             MultiplayerServerListWidget list = (MultiplayerServerListWidget) focused;
             MultiplayerServerListWidget.Entry entry = list.getSelected();
-            if (entry instanceof MultiplayerServerListWidget.LanServerEntry || entry instanceof MultiplayerServerListWidget.ServerEntry) {
-                ((MultiplayerScreen) screen).select(entry);
+            if (entry instanceof MultiplayerServerListWidget.LanServerListEntry || entry instanceof MultiplayerServerListWidget.ServerItem) {
+                ((MultiplayerScreen) screen).selectEntry(entry);
                 ((MultiplayerScreen) screen).connect();
             }
         } else if (focused instanceof ParentElement) {
@@ -580,23 +580,23 @@ public class LambdaInput
 
     private static boolean isScreenInteractive(@NotNull Screen screen)
     {
-        return !(screen instanceof AdvancementsScreen || screen instanceof ContainerScreen);
+        return !(screen instanceof AdvancementsScreen || screen instanceof AbstractContainerScreen);
     }
 
     // Inspired from https://github.com/MrCrayfish/Controllable/blob/1.14.X/src/main/java/com/mrcrayfish/controllable/client/ControllerInput.java#L686.
     private void moveMouseToClosestSlot(@NotNull MinecraftClient client, @Nullable Screen screen)
     {
         // Makes the mouse attracted to slots. This helps with selecting items when using a controller.
-        if (screen instanceof ContainerScreen) {
-            ContainerScreen inventoryScreen = (ContainerScreen) screen;
+        if (screen instanceof AbstractContainerScreen) {
+            AbstractContainerScreen inventoryScreen = (AbstractContainerScreen) screen;
             ContainerScreenAccessor accessor = (ContainerScreenAccessor) inventoryScreen;
             int guiLeft = accessor.lambdacontrols_getX();
             int guiTop = accessor.lambdacontrols_getY();
-            int mouseX = (int) (targetMouseX * (double) client.getWindow().getScaledWidth() / (double) client.getWindow().getWidth());
-            int mouseY = (int) (targetMouseY * (double) client.getWindow().getScaledHeight() / (double) client.getWindow().getHeight());
+            int mouseX = (int) (targetMouseX * (double) client.window.getScaledWidth() / (double) client.window.getWidth());
+            int mouseY = (int) (targetMouseY * (double) client.window.getScaledHeight() / (double) client.window.getHeight());
 
             // Finds the closest slot in the GUI within 14 pixels.
-            Optional<Pair<Slot, Double>> closestSlot = inventoryScreen.getContainer().slots.parallelStream()
+            Optional<Pair<Slot, Double>> closestSlot = inventoryScreen.getContainer().slotList.parallelStream()
                     .map(slot -> {
                         int x = guiLeft + slot.xPosition + 8;
                         int y = guiTop + slot.yPosition + 8;
@@ -612,8 +612,8 @@ public class LambdaInput
                 if (slot.hasStack() || !client.player.inventory.getMainHandStack().isEmpty()) {
                     int slotCenterXScaled = guiLeft + slot.xPosition + 8;
                     int slotCenterYScaled = guiTop + slot.yPosition + 8;
-                    int slotCenterX = (int) (slotCenterXScaled / ((double) client.getWindow().getScaledWidth() / (double) client.getWindow().getWidth()));
-                    int slotCenterY = (int) (slotCenterYScaled / ((double) client.getWindow().getScaledHeight() / (double) client.getWindow().getHeight()));
+                    int slotCenterX = (int) (slotCenterXScaled / ((double) client.window.getScaledWidth() / (double) client.window.getWidth()));
+                    int slotCenterY = (int) (slotCenterYScaled / ((double) client.window.getScaledHeight() / (double) client.window.getHeight()));
                     double deltaX = slotCenterX - targetMouseX;
                     double deltaY = slotCenterY - targetMouseY;
 

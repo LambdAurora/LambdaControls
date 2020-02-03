@@ -13,7 +13,7 @@ import me.lambdaurora.lambdacontrols.ControlsMode;
 import me.lambdaurora.lambdacontrols.client.LambdaControlsClient;
 import me.lambdaurora.lambdacontrols.client.util.ContainerScreenAccessor;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ingame.ContainerScreen;
+import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
 import net.minecraft.container.Slot;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,7 +25,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 /**
  * Represents the mixin for the class ContainerScreen.
  */
-@Mixin(ContainerScreen.class)
+@Mixin(AbstractContainerScreen.class)
 public abstract class ContainerScreenMixin implements ContainerScreenAccessor
 {
     protected int x;
@@ -51,7 +51,7 @@ public abstract class ContainerScreenMixin implements ContainerScreenAccessor
     {
         if (LambdaControlsClient.get().config.getControlsMode() == ControlsMode.CONTROLLER) {
             MinecraftClient client = MinecraftClient.getInstance();
-            int x = 10, y = client.getWindow().getScaledHeight() - 10 - 15;
+            int x = 10, y = client.window.getScaledHeight() - 10 - 15;
 
             x += LambdaControlsClient.drawButtonTip(x, y, new int[]{GLFW.GLFW_GAMEPAD_BUTTON_A}, "lambdacontrols.action.pickup_all", true, client) + 10;
             x += LambdaControlsClient.drawButtonTip(x, y, new int[]{GLFW.GLFW_GAMEPAD_BUTTON_B}, "lambdacontrols.action.exit", true, client) + 10;

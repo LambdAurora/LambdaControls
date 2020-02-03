@@ -40,7 +40,7 @@ public class ReloadControllerMappingsOption extends Option implements Nameable
             MinecraftClient client = MinecraftClient.getInstance();
             Controller.updateMappings();
             if (client.currentScreen != null)
-                client.currentScreen.init(client, client.getWindow().getScaledWidth(), client.getWindow().getScaledHeight());
+                client.currentScreen.init(client, client.window.getScaledWidth(), client.window.getScaledHeight());
             client.getToastManager().add(new SystemToast(SystemToast.Type.TUTORIAL_HINT, new TranslatableText("lambdacontrols.controller.mappings.updated"), null));
         });
         button.setTooltip(new TranslatableText("lambdacontrols.tooltip.reload_controller_mappings"));

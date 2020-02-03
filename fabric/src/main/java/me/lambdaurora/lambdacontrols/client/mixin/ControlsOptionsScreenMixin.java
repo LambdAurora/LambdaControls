@@ -12,14 +12,15 @@ package me.lambdaurora.lambdacontrols.client.mixin;
 import me.lambdaurora.lambdacontrols.client.gui.ControllerControlsScreen;
 import me.lambdaurora.lambdacontrols.client.gui.LambdaControlsSettingsScreen;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.options.ControlsOptionsScreen;
-import net.minecraft.client.gui.screen.options.GameOptionsScreen;
+import net.minecraft.client.gui.screen.controls.ControlsOptionsScreen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.Text;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
@@ -27,11 +28,19 @@ import org.spongepowered.asm.mixin.injection.Redirect;
  * Injects the new controls settings button.
  */
 @Mixin(ControlsOptionsScreen.class)
-public class ControlsOptionsScreenMixin extends GameOptionsScreen
+public class ControlsOptionsScreenMixin extends Screen
 {
-    public ControlsOptionsScreenMixin(Screen parent, GameOptions gameOptions, Text text)
+    @Shadow
+    @Final
+    private Screen parent;
+
+    @Shadow
+    @Final
+    private GameOptions options;
+
+    protected ControlsOptionsScreenMixin(Text title)
     {
-        super(parent, gameOptions, text);
+        super(title);
     }
 
     @Redirect(method = "init", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/options/ControlsOptionsScreen;addButton(Lnet/minecraft/client/gui/widget/AbstractButtonWidget;)Lnet/minecraft/client/gui/widget/AbstractButtonWidget;", ordinal = 1))
@@ -41,6 +50,6 @@ public class ControlsOptionsScreenMixin extends GameOptionsScreen
             return this.addButton(btn);
         else
             return this.addButton(new ButtonWidget(btn.x, btn.y, btn.getWidth(), ((AbstractButtonWidgetAccessor) btn).lambdacontrols_getHeight(), I18n.translate("menu.options"),
-                    b -> this.minecraft.openScreen(new LambdaControlsSettingsScreen(this, this.gameOptions, true))));
+                    b -> this.minecraft.openScreen(new LambdaControlsSettingsScreen(this, this.options, true))));
     }
 }

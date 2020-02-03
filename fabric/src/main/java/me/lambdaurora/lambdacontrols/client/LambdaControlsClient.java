@@ -86,11 +86,11 @@ public class LambdaControlsClient extends LambdaControls implements ClientModIni
         OpenScreenCallback.EVENT.register((client, screen) -> {
             if (screen == null && this.config.getControlsMode() == ControlsMode.TOUCHSCREEN) {
                 screen = new TouchscreenOverlay(this);
-                screen.init(client, client.getWindow().getScaledWidth(), client.getWindow().getScaledHeight());
+                screen.init(client, client.window.getScaledWidth(), client.window.getScaledHeight());
                 client.skipGameRender = false;
                 client.currentScreen = screen;
             } else if (screen != null) {
-                this.input.onScreenOpen(client, client.getWindow().getWidth(), client.getWindow().getHeight());
+                this.input.onScreenOpen(client, client.window.getWidth(), client.window.getHeight());
             }
         });
 

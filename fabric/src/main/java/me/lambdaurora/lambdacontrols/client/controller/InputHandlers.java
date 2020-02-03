@@ -15,9 +15,9 @@ import me.lambdaurora.lambdacontrols.client.mixin.CreativeInventoryScreenAccesso
 import me.lambdaurora.lambdacontrols.client.util.ContainerScreenAccessor;
 import me.lambdaurora.lambdacontrols.client.util.KeyBindingAccessor;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.advancement.AdvancementTab;
+import net.minecraft.client.gui.screen.advancement.AdvancementTreeWidget;
 import net.minecraft.client.gui.screen.advancement.AdvancementsScreen;
-import net.minecraft.client.gui.screen.ingame.ContainerScreen;
+import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.util.ScreenshotUtils;
 import net.minecraft.container.Slot;
@@ -69,8 +69,8 @@ public class InputHandlers
                 return true;
             } else if (client.currentScreen instanceof AdvancementsScreen) {
                 AdvancementsScreenAccessor screen = (AdvancementsScreenAccessor) client.currentScreen;
-                List<AdvancementTab> tabs = screen.lambdacontrols_getTabs().values().stream().distinct().collect(Collectors.toList());
-                AdvancementTab tab = screen.lambdacontrols_getSelectedTab();
+                List<AdvancementTreeWidget> tabs = screen.lambdacontrols_getTabs().values().stream().distinct().collect(Collectors.toList());
+                AdvancementTreeWidget tab = screen.lambdacontrols_getSelectedTab();
                 for (int i = 0; i < tabs.size(); i++) {
                     if (tabs.get(i).equals(tab)) {
                         int nextTab = i + (right ? 1 : -1);
@@ -78,7 +78,7 @@ public class InputHandlers
                             nextTab = tabs.size() - 1;
                         else if (nextTab >= tabs.size())
                             nextTab = 0;
-                        screen.lambdacontrols_getAdvancementManager().selectTab(tabs.get(nextTab).getRoot(), true);
+                        screen.lambdacontrols_getAdvancementManager().selectTab(tabs.get(nextTab).method_2307(), true);
                         break;
                     }
                 }
@@ -93,7 +93,7 @@ public class InputHandlers
             // If in game, then pause the game.
             if (client.currentScreen == null)
                 client.openPauseMenu(false);
-            else if (client.currentScreen instanceof ContainerScreen && client.player != null) // If the current screen is a container then close it.
+            else if (client.currentScreen instanceof AbstractContainerScreen && client.player != null) // If the current screen is a container then close it.
                 client.player.closeContainer();
             else // Else just close the current screen.
                 client.currentScreen.onClose();
@@ -112,7 +112,7 @@ public class InputHandlers
     public static boolean handleScreenshot(@NotNull MinecraftClient client, @NotNull ButtonBinding binding, @NotNull ButtonState action)
     {
         if (action == ButtonState.PRESS)
-            ScreenshotUtils.saveScreenshot(client.runDirectory, client.getWindow().getFramebufferWidth(), client.getWindow().getFramebufferHeight(), client.getFramebuffer(),
+            ScreenshotUtils.method_1659(client.runDirectory, client.window.getFramebufferWidth(), client.window.getFramebufferHeight(), client.getFramebuffer(),
                     text -> client.execute(() -> client.inGameHud.getChatHud().addMessage(text)));
         return true;
     }
@@ -129,21 +129,21 @@ public class InputHandlers
     public static PressAction handleInventorySlotPad(int direction)
     {
         return (client, binding, action) -> {
-            if (!(client.currentScreen instanceof ContainerScreen && action != ButtonState.RELEASE))
+            if (!(client.currentScreen instanceof AbstractContainerScreen && action != ButtonState.RELEASE))
                 return false;
 
-            ContainerScreen inventory = (ContainerScreen) client.currentScreen;
+            AbstractContainerScreen inventory = (AbstractContainerScreen) client.currentScreen;
             ContainerScreenAccessor accessor = (ContainerScreenAccessor) inventory;
             int guiLeft = accessor.lambdacontrols_getX();
             int guiTop = accessor.lambdacontrols_getY();
-            double mouseX = client.mouse.getX() * (double) client.getWindow().getScaledWidth() / (double) client.getWindow().getWidth();
-            double mouseY = client.mouse.getY() * (double) client.getWindow().getScaledHeight() / (double) client.getWindow().getHeight();
+            double mouseX = client.mouse.getX() * (double) client.window.getScaledWidth() / (double) client.window.getWidth();
+            double mouseY = client.mouse.getY() * (double) client.window.getScaledHeight() / (double) client.window.getHeight();
 
             // Finds the hovered slot.
             Slot mouseSlot = accessor.lambdacontrols_getSlotAt(mouseX, mouseY);
 
             // Finds the closest slot in the GUI within 14 pixels.
-            Optional<Slot> closestSlot = inventory.getContainer().slots.parallelStream()
+            Optional<Slot> closestSlot = inventory.getContainer().slotList.parallelStream()
                     .filter(Predicate.isEqual(mouseSlot).negate())
                     .map(slot -> {
                         int posX = guiLeft + slot.xPosition + 8;
@@ -187,8 +187,8 @@ public class InputHandlers
                 Slot slot = closestSlot.get();
                 int x = guiLeft + slot.xPosition + 8;
                 int y = guiTop + slot.yPosition + 8;
-                InputManager.queueMousePosition(x * (double) client.getWindow().getWidth() / (double) client.getWindow().getScaledWidth(),
-                        y * (double) client.getWindow().getHeight() / (double) client.getWindow().getScaledHeight());
+                InputManager.queueMousePosition(x * (double) client.window.getWidth() / (double) client.window.getScaledWidth(),
+                        y * (double) client.window.getHeight() / (double) client.window.getScaledHeight());
                 return true;
             }
             return false;
@@ -228,7 +228,7 @@ public class InputHandlers
      */
     public static boolean inInventory(@NotNull MinecraftClient client, @NotNull ButtonBinding binding)
     {
-        return client.currentScreen instanceof ContainerScreen;
+        return client.currentScreen instanceof AbstractContainerScreen;
     }
 
     /**

@@ -72,8 +72,8 @@ public class InputManager
         if (this.prevTargetMouseX != this.targetMouseX || this.prevTargetMouseY != this.targetMouseY) {
             double mouseX = this.prevTargetMouseX + (this.targetMouseX - this.prevTargetMouseX) * client.getTickDelta() + 0.5;
             double mouseY = this.prevTargetMouseY + (this.targetMouseY - this.prevTargetMouseY) * client.getTickDelta() + 0.5;
-            GLFW.glfwSetCursorPos(client.getWindow().getHandle(), mouseX, mouseY);
-            ((MouseAccessor) client.mouse).lambdacontrols_onCursorPos(client.getWindow().getHandle(), mouseX, mouseY);
+            GLFW.glfwSetCursorPos(client.window.getHandle(), mouseX, mouseY);
+            ((MouseAccessor) client.mouse).lambdacontrols_onCursorPos(client.window.getHandle(), mouseX, mouseY);
         }
     }
 
@@ -339,8 +339,8 @@ public class InputManager
 
     public static void queueMousePosition(double x, double y)
     {
-        INPUT_MANAGER.targetMouseX = (int) MathHelper.clamp(x, 0, MinecraftClient.getInstance().getWindow().getWidth());
-        INPUT_MANAGER.targetMouseY = (int) MathHelper.clamp(y, 0, MinecraftClient.getInstance().getWindow().getHeight());
+        INPUT_MANAGER.targetMouseX = (int) MathHelper.clamp(x, 0, MinecraftClient.getInstance().window.getWidth());
+        INPUT_MANAGER.targetMouseY = (int) MathHelper.clamp(y, 0, MinecraftClient.getInstance().window.getHeight());
     }
 
     public static void queueMoveMousePosition(double x, double y)

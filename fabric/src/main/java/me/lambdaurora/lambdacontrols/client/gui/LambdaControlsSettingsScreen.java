@@ -20,7 +20,7 @@ import me.lambdaurora.spruceui.option.*;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.options.ControlsOptionsScreen;
+import net.minecraft.client.gui.screen.controls.ControlsOptionsScreen;
 import net.minecraft.client.gui.widget.ButtonListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.options.GameOptions;
@@ -28,7 +28,7 @@ import net.minecraft.client.options.Option;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
 
@@ -91,7 +91,7 @@ public class LambdaControlsSettingsScreen extends Screen
         this.resetOption = new SpruceResetOption(btn -> {
             this.mod.config.reset();
             MinecraftClient client = MinecraftClient.getInstance();
-            this.init(client, client.getWindow().getScaledWidth(), client.getWindow().getScaledHeight());
+            this.init(client, client.window.getScaledWidth(), client.window.getScaledHeight());
         });
         // Gameplay options
         this.frontBlockPlacingOption = new SpruceBooleanOption("lambdacontrols.menu.front_block_placing", this.mod.config::hasFrontBlockPlacing,
@@ -240,7 +240,7 @@ public class LambdaControlsSettingsScreen extends Screen
         this.children.add(this.list);
 
         this.gamepadToolUrlLabel = new SpruceLabelWidget(this.width / 2, this.height - 29 - (5 + this.font.fontHeight) * 2, this.controllerMappingsUrlText, this.width,
-                label -> Util.getOperatingSystem().open(GAMEPAD_TOOL_URL), true);
+                label -> SystemUtil.getOperatingSystem().open(GAMEPAD_TOOL_URL), true);
         this.gamepadToolUrlLabel.setTooltip(new TranslatableText("chat.link.open"));
         this.children.add(this.gamepadToolUrlLabel);
 
